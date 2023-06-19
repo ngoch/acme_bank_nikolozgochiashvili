@@ -15,3 +15,7 @@ Packages Structure:
     repository - working with database
     service -  functions implementation
 
+Unit Tests:
+    
+    com.acme.test01.nikolozgochiashvili.repository.AccountRepositoryImplTest - DB test
+    com.acme.test01.nikolozgochiashvili.service.AccountServiceImplTest - Service test
