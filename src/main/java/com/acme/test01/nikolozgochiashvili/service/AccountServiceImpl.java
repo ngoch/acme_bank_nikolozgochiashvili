@@ -43,18 +43,33 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void withdraw(Long accountId, int amountToWithdraw) throws AccountNotFoundException, WithdrawalAmountTooLargeException {
+        Account account = accountRepository.find(accountId);
+        if (account == null) {
+            throw new AccountNotFoundException("Account with Id:" + accountId + " Not found.");
+        }
+        if (account instanceof CurrentAccount) {
+            CurrentAccount currentAccount = (CurrentAccount) account;
 
+            //TODO validations
+
+            currentAccount.setOverdraft(amountToWithdraw + currentAccount.getOverdraft());
+
+        } else {
+            System.out.println("Account is not current type");
+        }
     }
 
     @Override
     public void deposit(Long accountId, int amountToDeposit) throws AccountNotFoundException {
         Account account = accountRepository.find(accountId);
         if (account == null) {
-            throw new AccountNotFoundException("Account with Id:" + account + " Not found.");
+            throw new AccountNotFoundException("Account with Id:" + accountId + " Not found.");
         }
         if (account instanceof SavingsAccount) {
             SavingsAccount savingsAccount = (SavingsAccount) account;
             savingsAccount.setBalance(amountToDeposit + savingsAccount.getBalance());
+        } else {
+            System.out.println("Account is not saving type");
         }
     }
 }

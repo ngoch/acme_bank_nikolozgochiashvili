@@ -19,7 +19,7 @@ public class App {
             System.out.println("Customer Accounts = " + accountRepository.getCustomerAccounts(customerNumber));
 
             while (true) {
-                System.out.println("You can type commands: openSavinAccount, OpenCurrentAccount, withdraw, deposit and exit to stop");
+                System.out.println("You can type commands: openSavinAccount, openCurrentAccount, withdraw, deposit and exit to stop");
 
                 String command = scan.nextLine();
                 if (command.equals("exit")) {
@@ -31,8 +31,12 @@ public class App {
                         Long accountId = Long.valueOf(scan.nextLine());
                         System.out.println("amountToDeposit:");
                         Long amountToDeposit = Long.valueOf(scan.nextLine());
-                        accountService.openSavingsAccount(accountId, amountToDeposit);
-                        System.out.println("Opened saving account = " + accountRepository.find(accountId));
+                        try {
+                            accountService.openSavingsAccount(accountId, amountToDeposit);
+                            System.out.println("Opened saving account = " + accountRepository.find(accountId));
+                        } catch (RuntimeException e) {
+                            System.out.println(e.getMessage());
+                        }
                         break;
                     case "openCurrentAccount":
                         System.out.println("accountId:");
