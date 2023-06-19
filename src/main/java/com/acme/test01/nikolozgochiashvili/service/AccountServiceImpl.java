@@ -8,6 +8,8 @@ import com.acme.test01.nikolozgochiashvili.model.SavingsAccount;
 import com.acme.test01.nikolozgochiashvili.repository.AccountRepository;
 import com.acme.test01.nikolozgochiashvili.repository.AccountRepositoryImpl;
 
+import java.util.Objects;
+
 public class AccountServiceImpl implements AccountService {
 
     private static final int OVERDRAFT_LIMIT = 100000;
@@ -46,10 +48,11 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void withdraw(Long accountId, int amountToWithdraw) throws AccountNotFoundException, WithdrawalAmountTooLargeException {
+
         Account account = accountRepository.find(accountId);
-        if (account == null) {
-            throw new AccountNotFoundException("Account with Id:" + accountId + " Not found.");
-        }
+
+        checkAccount(account, accountId);
+
         if (account instanceof CurrentAccount) {
             CurrentAccount currentAccount = (CurrentAccount) account;
 
@@ -70,14 +73,24 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void deposit(Long accountId, int amountToDeposit) throws AccountNotFoundException {
         Account account = accountRepository.find(accountId);
-        if (account == null) {
-            throw new AccountNotFoundException("Account with Id:" + accountId + " Not found.");
-        }
+
+        checkAccount(account, accountId);
+
         if (account instanceof SavingsAccount) {
             SavingsAccount savingsAccount = (SavingsAccount) account;
             savingsAccount.setBalance(amountToDeposit + savingsAccount.getBalance());
         } else {
             System.out.println("Account is not saving type");
+        }
+    }
+
+    private void checkAccount(Account account, long accountId) throws AccountNotFoundException {
+        if (account == null) {
+            throw new AccountNotFoundException("Account with Id:" + accountId + " Not found.");
+        }
+
+        if (!Objects.equals(account.getCustomerNumber(), this.customerNumber)) {
+            throw new AccountNotFoundException("Account with Id:" + accountId + " doesn't have customer: " + customerNumber);
         }
     }
 }

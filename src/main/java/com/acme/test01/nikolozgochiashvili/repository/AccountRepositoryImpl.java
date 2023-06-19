@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class AccountRepositoryImpl implements AccountRepository {
 
-    private SystemDB systemDB = SystemDB.getInstance();
+    private final SystemDB systemDB = SystemDB.getInstance();
 
     @Override
     public void save(Account account) {
