@@ -54,7 +54,7 @@ public class App {
                         } catch (WithdrawalAmountTooLargeException e) {
                             System.out.println(e.getMessage());
                         }
-                        System.out.println("Add deposit account = " + accountRepository.find(withdrawAccountId));
+                        System.out.println("After withdraw account = " + accountRepository.find(withdrawAccountId));
                         break;
                     case "deposit":
                         System.out.println("accountId:");

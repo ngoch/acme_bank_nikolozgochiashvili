@@ -10,6 +10,9 @@ import com.acme.test01.nikolozgochiashvili.repository.AccountRepositoryImpl;
 
 public class AccountServiceImpl implements AccountService {
 
+    private static final int OVERDRAFT_LIMIT = 100000;
+    private static final int MIN_DEPOSIT = 1000;
+
     private final AccountRepository accountRepository = new AccountRepositoryImpl();
 
     private final String customerNumber;
@@ -20,8 +23,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void openSavingsAccount(Long accountId, Long amountToDeposit) {
-        if (amountToDeposit < 1000) {
-            throw new RuntimeException("Deposit amount must be more then 1000");
+        if (amountToDeposit < MIN_DEPOSIT) {
+            throw new RuntimeException("Deposit amount must be more then " + MIN_DEPOSIT);
         }
 
         SavingsAccount savingsAccount = new SavingsAccount();
@@ -50,10 +53,15 @@ public class AccountServiceImpl implements AccountService {
         if (account instanceof CurrentAccount) {
             CurrentAccount currentAccount = (CurrentAccount) account;
 
-            //TODO validations
+            if ((currentAccount.getPositiveBalance() - currentAccount.getNegativeBalance()) + OVERDRAFT_LIMIT < amountToWithdraw) {
+                throw new WithdrawalAmountTooLargeException("Withdrawal amount too large, Limit is:" + OVERDRAFT_LIMIT);
+            }
 
             currentAccount.setOverdraft(amountToWithdraw + currentAccount.getOverdraft());
 
+            int balance = currentAccount.getPositiveBalance() - amountToWithdraw;
+            currentAccount.setPositiveBalance(Math.max(balance, 0));
+            currentAccount.setNegativeBalance(currentAccount.getNegativeBalance() + Math.abs(balance));
         } else {
             System.out.println("Account is not current type");
         }
